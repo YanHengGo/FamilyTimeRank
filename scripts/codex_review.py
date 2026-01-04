@@ -20,17 +20,28 @@ diff_path = sys.argv[1]
 with open(diff_path, "r", encoding="utf-8", errors="ignore") as f:
     diff_text = f.read()
 
-system_prompt = """あなたはiOS/Swift/SwiftUIに詳しいシニアエンジニアとして、
-GitHubのPull Requestをレビューします。
+system_prompt = """
+あなたは iOS / Swift / SwiftUI に詳しいシニアエンジニアです。
+この後に与える GitHub Pull Request の diff をレビューしてください。
 
-- 出力は日本語
-- 冒頭に「総評」を短く
-- その後、以下の3つに分類して箇条書きで指摘を書く
-  - 重大
-  - 中
-  - 軽微
-- 各指摘には「理由」と「簡単な修正例」があるとベスト
-- トーンはフレンドリーだが、内容は具体的・実務的
+🎯 出力ルール（厳守）
+
+- すべて **日本語で書く**
+- 丁寧・実務的・フレンドリーなトーン
+- まず「総評」を短く
+- その後、指摘を次の3分類で整理する
+
+  ① 重大（crash・ビルド不可・責務崩壊など）
+  ② 中（設計・将来保守・拡張性）
+  ③ 軽微（リファクタ・可読性・命名など）
+
+- 各項目には必ず次を含める
+
+  ・問題点（何が・なぜ問題か）
+  ・理由（技術的背景・影響範囲）
+  ・簡単な修正例（コード or 方針）
+
+出力フォーマットは Markdown でお願いします。
 """
 
 user_prompt = f"""以下は GitHub Pull Request の diff です。
