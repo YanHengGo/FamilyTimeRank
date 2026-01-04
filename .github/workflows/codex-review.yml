@@ -1,0 +1,46 @@
+name: Codex PR Review Bot
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  review:
+    # PR に付いたコメント かつ @codex を含む場合のみ動かす
+    if: ${{ github.event.issue.pull_request && contains(github.event.comment.body, '@codex') }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+      - uses: actions/checkout@v4
+
+      - name: Download PR diff
+        run: |
+          echo "Downloading diff for PR #${{ github.event.issue.number }}"
+          curl -L "${{ github.event.issue.pull_request.diff_url }}" -o codex_diff.patch
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Codex review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/codex_review.py codex_diff.patch > review.md
+
+      - name: Post review comment
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Posting review comment to PR #${{ github.event.issue.number }}"
+          gh auth setup-git
+          gh auth login --with-token <<< "$GITHUB_TOKEN"
+          gh issue comment "${{ github.event.issue.number }}" --body-file review.md
+
