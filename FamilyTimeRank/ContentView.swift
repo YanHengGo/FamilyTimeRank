@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    let dependencyContainer: DependencyContainer
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
+        HomeView(
+            viewModel: HomeViewModel(
+                getTodayRankingUseCase: dependencyContainer.useCases.getTodayRankingUseCase
+            )
+        )
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(dependencyContainer: DependencyContainer())
 }
