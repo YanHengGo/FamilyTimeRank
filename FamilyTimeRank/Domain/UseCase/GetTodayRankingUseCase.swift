@@ -21,7 +21,9 @@ final class GetTodayRankingUseCaseImpl: GetTodayRankingUseCase {
     func execute(for date: Date) -> TodayRankingResult {
         let family = familyRepository.fetchFamily()
         let usageList = usageRepository.fetchUsage(for: date)
-        let usageByMemberId = Dictionary(uniqueKeysWithValues: usageList.map { ($0.memberId, $0.minutes) })
+        let usageByMemberId = usageList.reduce(into: [:]) { partialResult, usage in
+            partialResult[usage.memberId, default: 0] += usage.minutes
+        }
 
         let entries = family.members
             .map { member in
