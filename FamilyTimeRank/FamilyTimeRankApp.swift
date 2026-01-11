@@ -9,6 +9,9 @@ import SwiftUI
 
 @main
 struct FamilyTimeRankApp: App {
+    @UIApplicationDelegateAdaptor(FirebaseAppDelegate.self)
+    var appDelegate
+
     private let dependencyContainer = DependencyContainer()
 
     var body: some Scene {
