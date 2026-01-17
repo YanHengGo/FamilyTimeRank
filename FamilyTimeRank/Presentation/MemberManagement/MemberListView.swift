@@ -2,8 +2,7 @@ import SwiftUI
 
 struct MemberListView: View {
     @StateObject private var viewModel: MemberListViewModel
-    @State private var isCreatePresented = false
-    @State private var editingMember: MemberRow?
+    @State private var activeSheet: MemberSheetDestination?
     @State private var deletingMember: MemberRow?
 
     init(viewModel: MemberListViewModel) {
@@ -17,7 +16,11 @@ struct MemberListView: View {
                     .foregroundStyle(.red)
             }
 
-            Section(header: Text(viewModel.state.familyName.isEmpty ? "メンバー" : viewModel.state.familyName)) {
+            Section(
+                header: Text(viewModel.state.familyName.isEmpty ? "メンバー" : viewModel.state.familyName),
+                footer: Text("行を左にスワイプで編集・削除")
+                    .foregroundStyle(.secondary)
+            ) {
                 ForEach(viewModel.state.members) { member in
                     HStack {
                         Text(member.displayName)
@@ -28,7 +31,7 @@ struct MemberListView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button("編集") {
                             if viewModel.canManageMembers {
-                                editingMember = member
+                                activeSheet = .edit(member)
                             } else {
                                 viewModel.notifyFamilyIdMissing()
                             }
@@ -51,7 +54,7 @@ struct MemberListView: View {
             ToolbarItem(placement: .primaryAction) {
                 Button("追加") {
                     if viewModel.canManageMembers {
-                        isCreatePresented = true
+                        activeSheet = .create
                     } else {
                         viewModel.notifyFamilyIdMissing()
                     }
@@ -62,26 +65,28 @@ struct MemberListView: View {
         .onAppear {
             viewModel.onAppear()
         }
-        .sheet(isPresented: $isCreatePresented) {
-            MemberFormView(
-                title: "メンバー追加",
-                initialDisplayName: "",
-                initialRole: .dad
-            ) { displayName, role in
-                viewModel.addMember(displayName: displayName, role: role)
-            }
-        }
-        .sheet(item: $editingMember) { member in
-            MemberFormView(
-                title: "メンバー編集",
-                initialDisplayName: member.displayName,
-                initialRole: member.role
-            ) { displayName, role in
-                viewModel.updateMember(
-                    memberId: member.id,
-                    displayName: displayName,
-                    role: role
-                )
+        .sheet(item: $activeSheet) { sheet in
+            switch sheet {
+            case .create:
+                MemberFormView(
+                    title: "メンバー追加",
+                    initialDisplayName: "",
+                    initialRole: .dad
+                ) { displayName, role in
+                    viewModel.addMember(displayName: displayName, role: role)
+                }
+            case .edit(let member):
+                MemberFormView(
+                    title: "メンバー編集",
+                    initialDisplayName: member.displayName,
+                    initialRole: member.role
+                ) { displayName, role in
+                    viewModel.updateMember(
+                        memberId: member.id,
+                        displayName: displayName,
+                        role: role
+                    )
+                }
             }
         }
         .alert("メンバーを削除しますか？", isPresented: deleteAlertBinding()) {
@@ -106,6 +111,20 @@ struct MemberListView: View {
                 }
             }
         )
+    }
+}
+
+private enum MemberSheetDestination: Identifiable {
+    case create
+    case edit(MemberRow)
+
+    var id: String {
+        switch self {
+        case .create:
+            return "create"
+        case .edit(let member):
+            return "edit-\(member.id)"
+        }
     }
 }
 
