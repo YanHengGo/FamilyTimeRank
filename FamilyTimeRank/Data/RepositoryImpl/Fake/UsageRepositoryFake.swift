@@ -1,7 +1,7 @@
 import Foundation
 
 final class UsageRepositoryFake: UsageRepository {
-    func fetchUsage(for date: Date) -> [UsageTime] {
+    func fetchUsage(for date: Date) async throws -> [UsageTime] {
         return [
             UsageTime(id: "usage-dad", memberId: "member-dad", minutes: 200),
             UsageTime(id: "usage-mom", memberId: "member-mom", minutes: 105),

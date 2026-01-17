@@ -6,7 +6,7 @@ struct TodayRankingResult: Equatable {
 }
 
 protocol GetTodayRankingUseCase {
-    func execute(for date: Date) -> TodayRankingResult
+    func execute(for date: Date) async throws -> TodayRankingResult
 }
 
 final class GetTodayRankingUseCaseImpl: GetTodayRankingUseCase {
@@ -18,9 +18,9 @@ final class GetTodayRankingUseCaseImpl: GetTodayRankingUseCase {
         self.usageRepository = usageRepository
     }
 
-    func execute(for date: Date) -> TodayRankingResult {
-        let family = familyRepository.fetchFamily()
-        let usageList = usageRepository.fetchUsage(for: date)
+    func execute(for date: Date) async throws -> TodayRankingResult {
+        let family = try await familyRepository.fetchFamily()
+        let usageList = try await usageRepository.fetchUsage(for: date)
         let usageByMemberId = usageList.reduce(into: [:]) { partialResult, usage in
             partialResult[usage.memberId, default: 0] += usage.minutes
         }

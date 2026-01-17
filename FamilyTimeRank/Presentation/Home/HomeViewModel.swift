@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 
+@MainActor
 final class HomeViewModel: ObservableObject {
     @Published private(set) var state: HomeState
     private let getTodayRankingUseCase: GetTodayRankingUseCase
@@ -13,22 +14,33 @@ final class HomeViewModel: ObservableObject {
     func onAppear() {
         guard state.status != .loading else { return }
         state.status = .loading
+        Task { await load() }
+    }
 
-        let today = Date()
-        let result = getTodayRankingUseCase.execute(for: today)
-
-        state = HomeState(
-            status: .loaded,
-            date: result.ranking.date,
-            rows: result.ranking.entries.map {
-                HomeRankingRow(
-                    id: $0.id,
-                    displayName: $0.member.displayName,
-                    minutes: $0.minutes,
-                    rank: $0.rank
-                )
-            },
-            familyAverageMinutes: result.familyAverageMinutes
-        )
+    private func load() async {
+        do {
+            let today = Date()
+            let result = try await getTodayRankingUseCase.execute(for: today)
+            state = HomeState(
+                status: .loaded,
+                date: result.ranking.date,
+                rows: result.ranking.entries.map {
+                    HomeRankingRow(
+                        id: $0.id,
+                        displayName: $0.member.displayName,
+                        minutes: $0.minutes,
+                        rank: $0.rank
+                    )
+                },
+                familyAverageMinutes: result.familyAverageMinutes
+            )
+        } catch {
+            state = HomeState(
+                status: .failed(error.localizedDescription),
+                date: nil,
+                rows: [],
+                familyAverageMinutes: nil
+            )
+        }
     }
 }
