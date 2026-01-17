@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct InviteCodeView: View {
     @StateObject private var viewModel: InviteCodeViewModel
