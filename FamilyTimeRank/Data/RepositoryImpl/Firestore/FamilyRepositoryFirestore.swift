@@ -30,4 +30,45 @@ final class FamilyRepositoryFirestore: FamilyRepository {
             members: domainMembers
         )
     }
+
+    func createFamily(name: String, inviteCode: String) async throws -> String {
+        try await dataSource.createFamily(name: name, inviteCode: inviteCode)
+    }
+
+    func findFamilyId(inviteCode: String) async throws -> String {
+        try await dataSource.findFamilyId(inviteCode: inviteCode)
+    }
+
+    func addMember(
+        familyId: String,
+        displayName: String,
+        role: MemberRole
+    ) async throws -> String {
+        try await dataSource.addMember(
+            familyId: familyId,
+            displayName: displayName,
+            role: role.rawValue
+        )
+    }
+
+    func updateMember(
+        familyId: String,
+        memberId: String,
+        displayName: String,
+        role: MemberRole
+    ) async throws {
+        try await dataSource.updateMember(
+            familyId: familyId,
+            memberId: memberId,
+            displayName: displayName,
+            role: role.rawValue
+        )
+    }
+
+    func deleteMember(
+        familyId: String,
+        memberId: String
+    ) async throws {
+        try await dataSource.deleteMember(familyId: familyId, memberId: memberId)
+    }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-enum MemberRole: String {
+enum MemberRole: String, CaseIterable {
     case dad
     case mom
     case son

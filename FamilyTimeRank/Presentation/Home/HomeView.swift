@@ -43,7 +43,10 @@ struct HomeView: View {
 
 #Preview {
     let repositories = RepositoryContainer()
-    let useCases = UseCaseContainer(repositories: repositories)
+    let useCases = UseCaseContainer(
+        repositories: repositories,
+        familyIdStore: UserDefaultsFamilyIdStore()
+    )
     let viewModel = HomeViewModel(getTodayRankingUseCase: useCases.getTodayRankingUseCase)
     HomeView(viewModel: viewModel)
 }
