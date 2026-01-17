@@ -45,7 +45,7 @@ final class OnboardingViewModel: ObservableObject {
                 return "家族名を入力してください。"
             }
         case .join:
-            if state.inviteCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            if normalizedInviteCode().isEmpty {
                 return "招待コードを入力してください。"
             }
         }
@@ -62,8 +62,9 @@ final class OnboardingViewModel: ObservableObject {
                     role: state.role
                 )
             case .join:
+                let inviteCode = normalizedInviteCode()
                 _ = try await joinFamilyUseCase.execute(
-                    inviteCode: state.inviteCode,
+                    inviteCode: inviteCode,
                     displayName: state.displayName,
                     role: state.role
                 )
@@ -72,5 +73,11 @@ final class OnboardingViewModel: ObservableObject {
         } catch {
             state.status = .failed(error.localizedDescription)
         }
+    }
+
+    private func normalizedInviteCode() -> String {
+        state.inviteCode
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .uppercased()
     }
 }
