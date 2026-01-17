@@ -1,5 +1,5 @@
 import Foundation
 
 protocol FamilyRepository {
-    func fetchFamily() -> Family
+    func fetchFamily() async throws -> Family
 }

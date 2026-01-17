@@ -1,7 +1,7 @@
 import Foundation
 
 final class FamilyRepositoryFake: FamilyRepository {
-    func fetchFamily() -> Family {
+    func fetchFamily() async throws -> Family {
         return Family(
             id: "family-001",
             name: "サンプル家族",
