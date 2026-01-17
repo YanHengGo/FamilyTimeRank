@@ -27,11 +27,19 @@ struct MemberListView: View {
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button("編集") {
-                            editingMember = member
+                            if viewModel.canManageMembers {
+                                editingMember = member
+                            } else {
+                                viewModel.notifyFamilyIdMissing()
+                            }
                         }
                         .tint(.blue)
                         Button("削除") {
-                            deletingMember = member
+                            if viewModel.canManageMembers {
+                                deletingMember = member
+                            } else {
+                                viewModel.notifyFamilyIdMissing()
+                            }
                         }
                         .tint(.red)
                     }
@@ -42,8 +50,13 @@ struct MemberListView: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("追加") {
-                    isCreatePresented = true
+                    if viewModel.canManageMembers {
+                        isCreatePresented = true
+                    } else {
+                        viewModel.notifyFamilyIdMissing()
+                    }
                 }
+                .disabled(!viewModel.canManageMembers)
             }
         }
         .onAppear {

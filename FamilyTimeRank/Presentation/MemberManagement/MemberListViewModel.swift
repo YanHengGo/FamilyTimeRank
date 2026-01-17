@@ -41,7 +41,10 @@ final class MemberListViewModel: ObservableObject {
     }
 
     func addMember(displayName: String, role: MemberRole) {
-        guard let familyId else { return }
+        guard let familyId else {
+            notifyFamilyIdMissing()
+            return
+        }
         Task {
             do {
                 _ = try await addMemberUseCase.execute(
@@ -57,7 +60,10 @@ final class MemberListViewModel: ObservableObject {
     }
 
     func updateMember(memberId: String, displayName: String, role: MemberRole) {
-        guard let familyId else { return }
+        guard let familyId else {
+            notifyFamilyIdMissing()
+            return
+        }
         Task {
             do {
                 try await updateMemberUseCase.execute(
@@ -74,7 +80,10 @@ final class MemberListViewModel: ObservableObject {
     }
 
     func deleteMember(memberId: String) {
-        guard let familyId else { return }
+        guard let familyId else {
+            notifyFamilyIdMissing()
+            return
+        }
         Task {
             do {
                 try await deleteMemberUseCase.execute(
@@ -110,5 +119,13 @@ final class MemberListViewModel: ObservableObject {
                 members: []
             )
         }
+    }
+
+    var canManageMembers: Bool {
+        familyId != nil && state.status != .loading
+    }
+
+    func notifyFamilyIdMissing() {
+        state.status = .failed("メンバー情報を取得中です。少し待ってから再試行してください。")
     }
 }
