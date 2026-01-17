@@ -42,11 +42,18 @@ struct ContentView: View {
         let inviteViewModel = InviteCodeViewModel(
             familyRepository: repositories.familyRepository
         )
+        let memberListViewModel = MemberListViewModel(
+            familyRepository: repositories.familyRepository,
+            addMemberUseCase: useCases.addMemberUseCase,
+            updateMemberUseCase: useCases.updateMemberUseCase,
+            deleteMemberUseCase: useCases.deleteMemberUseCase
+        )
         return HomeView(
             viewModel: HomeViewModel(
                 getTodayRankingUseCase: useCases.getTodayRankingUseCase
             ),
-            inviteCodeViewModel: inviteViewModel
+            inviteCodeViewModel: inviteViewModel,
+            memberListViewModel: memberListViewModel
         )
     }
 }

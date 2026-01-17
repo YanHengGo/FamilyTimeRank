@@ -4,6 +4,7 @@ final class UseCaseContainer {
     let getTodayRankingUseCase: GetTodayRankingUseCase
     let createFamilyUseCase: CreateFamilyUseCase
     let joinFamilyUseCase: JoinFamilyUseCase
+    let addMemberUseCase: AddMemberUseCase
     let updateMemberUseCase: UpdateMemberUseCase
     let deleteMemberUseCase: DeleteMemberUseCase
 
@@ -19,6 +20,9 @@ final class UseCaseContainer {
         self.joinFamilyUseCase = JoinFamilyUseCaseImpl(
             familyRepository: repositories.familyRepository,
             familyIdStore: familyIdStore
+        )
+        self.addMemberUseCase = AddMemberUseCaseImpl(
+            familyRepository: repositories.familyRepository
         )
         self.updateMemberUseCase = UpdateMemberUseCaseImpl(
             familyRepository: repositories.familyRepository
