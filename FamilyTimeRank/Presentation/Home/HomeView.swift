@@ -2,15 +2,25 @@ import SwiftUI
 
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
+    @State private var isInviteCodePresented = false
+    private let inviteCodeViewModel: InviteCodeViewModel
 
-    init(viewModel: HomeViewModel) {
+    init(viewModel: HomeViewModel, inviteCodeViewModel: InviteCodeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.inviteCodeViewModel = inviteCodeViewModel
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("今日のランキング")
-                .font(.title2)
+            HStack {
+                Text("今日のランキング")
+                    .font(.title2)
+                Spacer()
+                Button("招待コード") {
+                    isInviteCodePresented = true
+                }
+                .font(.subheadline)
+            }
 
             if viewModel.state.status == .loading {
                 ProgressView()
@@ -38,6 +48,9 @@ struct HomeView: View {
         .onAppear {
             viewModel.onAppear()
         }
+        .sheet(isPresented: $isInviteCodePresented) {
+            InviteCodeView(viewModel: inviteCodeViewModel)
+        }
     }
 }
 
@@ -48,5 +61,6 @@ struct HomeView: View {
         familyIdStore: UserDefaultsFamilyIdStore()
     )
     let viewModel = HomeViewModel(getTodayRankingUseCase: useCases.getTodayRankingUseCase)
-    HomeView(viewModel: viewModel)
+    let inviteViewModel = InviteCodeViewModel(familyRepository: repositories.familyRepository)
+    HomeView(viewModel: viewModel, inviteCodeViewModel: inviteViewModel)
 }

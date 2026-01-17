@@ -4,6 +4,7 @@ import Foundation
 @MainActor
 final class OnboardingViewModel: ObservableObject {
     @Published var state: OnboardingState
+    @Published private(set) var didComplete: Bool
 
     private let createFamilyUseCase: CreateFamilyUseCase
     private let joinFamilyUseCase: JoinFamilyUseCase
@@ -22,6 +23,7 @@ final class OnboardingViewModel: ObservableObject {
             role: .dad,
             status: .idle
         )
+        self.didComplete = false
     }
 
     func submit() {
@@ -70,6 +72,7 @@ final class OnboardingViewModel: ObservableObject {
                 )
             }
             state.status = .idle
+            didComplete = true
         } catch {
             state.status = .failed(error.localizedDescription)
         }

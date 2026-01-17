@@ -28,7 +28,9 @@ struct ContentView: View {
             createFamilyUseCase: useCases.createFamilyUseCase,
             joinFamilyUseCase: useCases.joinFamilyUseCase
         )
-        return OnboardingView(viewModel: viewModel)
+        return OnboardingView(viewModel: viewModel) {
+            familyId = UserDefaultsFamilyIdStore().get() ?? ""
+        }
     }
 
     private func homeView(familyId: String) -> some View {
@@ -37,10 +39,14 @@ struct ContentView: View {
             repositories: repositories,
             familyIdStore: UserDefaultsFamilyIdStore()
         )
+        let inviteViewModel = InviteCodeViewModel(
+            familyRepository: repositories.familyRepository
+        )
         return HomeView(
             viewModel: HomeViewModel(
                 getTodayRankingUseCase: useCases.getTodayRankingUseCase
-            )
+            ),
+            inviteCodeViewModel: inviteViewModel
         )
     }
 }
