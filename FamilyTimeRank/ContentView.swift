@@ -8,17 +8,43 @@
 import SwiftUI
 
 struct ContentView: View {
-    let dependencyContainer: DependencyContainer
+    @AppStorage("familyId") private var familyId: String = ""
 
     var body: some View {
-        HomeView(
+        if familyId.isEmpty {
+            onboardingView()
+        } else {
+            homeView(familyId: familyId)
+        }
+    }
+
+    private func onboardingView() -> some View {
+        let repositories = RepositoryContainer(source: .firestore(familyId: ""))
+        let useCases = UseCaseContainer(
+            repositories: repositories,
+            familyIdStore: UserDefaultsFamilyIdStore()
+        )
+        let viewModel = OnboardingViewModel(
+            createFamilyUseCase: useCases.createFamilyUseCase,
+            joinFamilyUseCase: useCases.joinFamilyUseCase
+        )
+        return OnboardingView(viewModel: viewModel)
+    }
+
+    private func homeView(familyId: String) -> some View {
+        let repositories = RepositoryContainer(source: .firestore(familyId: familyId))
+        let useCases = UseCaseContainer(
+            repositories: repositories,
+            familyIdStore: UserDefaultsFamilyIdStore()
+        )
+        return HomeView(
             viewModel: HomeViewModel(
-                getTodayRankingUseCase: dependencyContainer.useCases.getTodayRankingUseCase
+                getTodayRankingUseCase: useCases.getTodayRankingUseCase
             )
         )
     }
 }
 
 #Preview {
-    ContentView(dependencyContainer: DependencyContainer())
+    ContentView()
 }

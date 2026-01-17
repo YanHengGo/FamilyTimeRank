@@ -13,18 +13,13 @@ struct FamilyTimeRankApp: App {
     @UIApplicationDelegateAdaptor(FirebaseAppDelegate.self)
     var appDelegate
 
-    let dependencyContainer: DependencyContainer
-
     init() {
         FirebaseApp.configure()
-        dependencyContainer = DependencyContainer(
-            source: .firestore(familyId: "UdtTpJWvHBQAvKEte7Eg")
-        )
     }
 
     var body: some Scene {
         WindowGroup {
-            ContentView(dependencyContainer: dependencyContainer)
+            ContentView()
         }
     }
 }

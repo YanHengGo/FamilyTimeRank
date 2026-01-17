@@ -38,6 +38,48 @@ final class FirestoreFamilyDataSource {
         }
     }
 
+    func createFamily(
+        name: String,
+        inviteCode: String
+    ) async throws -> String {
+        let docRef = db.collection("families").document()
+        let data: [String: Any] = [
+            "name": name,
+            "inviteCode": inviteCode,
+            "createdAt": FieldValue.serverTimestamp()
+        ]
+        return try await withCheckedThrowingContinuation { continuation in
+            docRef.setData(data) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: docRef.documentID)
+            }
+        }
+    }
+
+    func findFamilyId(
+        inviteCode: String
+    ) async throws -> String {
+        try await withCheckedThrowingContinuation { continuation in
+            db.collection("families")
+                .whereField("inviteCode", isEqualTo: inviteCode)
+                .limit(to: 1)
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                        return
+                    }
+                    guard let doc = snapshot?.documents.first else {
+                        continuation.resume(throwing: FamilyRepositoryError.inviteCodeNotFound)
+                        return
+                    }
+                    continuation.resume(returning: doc.documentID)
+                }
+        }
+    }
+
     func fetchMembers(
         familyId: String
     ) async throws -> [MemberDTO] {
@@ -60,6 +102,76 @@ final class FirestoreFamilyDataSource {
                     } ?? []
                     continuation.resume(returning: members)
                 }
+        }
+    }
+
+    func addMember(
+        familyId: String,
+        displayName: String,
+        role: String
+    ) async throws -> String {
+        let docRef = db.collection("families")
+            .document(familyId)
+            .collection("members")
+            .document()
+        let data: [String: Any] = [
+            "displayName": displayName,
+            "role": role,
+            "createdAt": FieldValue.serverTimestamp()
+        ]
+        return try await withCheckedThrowingContinuation { continuation in
+            docRef.setData(data) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: docRef.documentID)
+            }
+        }
+    }
+
+    func updateMember(
+        familyId: String,
+        memberId: String,
+        displayName: String,
+        role: String
+    ) async throws {
+        let docRef = db.collection("families")
+            .document(familyId)
+            .collection("members")
+            .document(memberId)
+        let data: [String: Any] = [
+            "displayName": displayName,
+            "role": role,
+            "updatedAt": FieldValue.serverTimestamp()
+        ]
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            docRef.updateData(data) { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: ())
+            }
+        }
+    }
+
+    func deleteMember(
+        familyId: String,
+        memberId: String
+    ) async throws {
+        let docRef = db.collection("families")
+            .document(familyId)
+            .collection("members")
+            .document(memberId)
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            docRef.delete { error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                continuation.resume(returning: ())
+            }
         }
     }
 }
