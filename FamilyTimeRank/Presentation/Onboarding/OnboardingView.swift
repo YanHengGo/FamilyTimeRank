@@ -2,9 +2,11 @@ import SwiftUI
 
 struct OnboardingView: View {
     @StateObject private var viewModel: OnboardingViewModel
+    let onComplete: () -> Void
 
-    init(viewModel: OnboardingViewModel) {
+    init(viewModel: OnboardingViewModel, onComplete: @escaping () -> Void) {
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.onComplete = onComplete
     }
 
     var body: some View {
@@ -60,6 +62,11 @@ struct OnboardingView: View {
                 }
             }
             .navigationTitle("はじめに")
+            .onChange(of: viewModel.didComplete) { completed in
+                if completed {
+                    onComplete()
+                }
+            }
         }
     }
 }
@@ -89,5 +96,5 @@ private extension MemberRole {
         createFamilyUseCase: useCases.createFamilyUseCase,
         joinFamilyUseCase: useCases.joinFamilyUseCase
     )
-    OnboardingView(viewModel: viewModel)
+    OnboardingView(viewModel: viewModel, onComplete: {})
 }
