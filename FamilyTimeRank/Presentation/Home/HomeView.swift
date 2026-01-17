@@ -4,52 +4,67 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @State private var isInviteCodePresented = false
     private let inviteCodeViewModel: InviteCodeViewModel
+    private let memberListViewModel: MemberListViewModel
 
-    init(viewModel: HomeViewModel, inviteCodeViewModel: InviteCodeViewModel) {
+    init(
+        viewModel: HomeViewModel,
+        inviteCodeViewModel: InviteCodeViewModel,
+        memberListViewModel: MemberListViewModel
+    ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.inviteCodeViewModel = inviteCodeViewModel
+        self.memberListViewModel = memberListViewModel
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("今日のランキング")
-                    .font(.title2)
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("今日のランキング")
+                        .font(.title2)
+                    Spacer()
+                    Button("招待コード") {
+                        isInviteCodePresented = true
+                    }
+                    .font(.subheadline)
+                }
+
+                if viewModel.state.status == .loading {
+                    ProgressView()
+                } else if case let .failed(message) = viewModel.state.status {
+                    Text(message)
+                        .foregroundStyle(.red)
+                } else {
+                    if let average = viewModel.state.familyAverageMinutes {
+                        Text("家族平均 \(average)分")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ForEach(viewModel.state.rows) { row in
+                        RankingRowView(
+                            rank: row.rank,
+                            displayName: row.displayName,
+                            minutes: row.minutes
+                        )
+                    }
+                }
                 Spacer()
-                Button("招待コード") {
-                    isInviteCodePresented = true
-                }
-                .font(.subheadline)
             }
-
-            if viewModel.state.status == .loading {
-                ProgressView()
-            } else if case let .failed(message) = viewModel.state.status {
-                Text(message)
-                    .foregroundStyle(.red)
-            } else {
-                if let average = viewModel.state.familyAverageMinutes {
-                    Text("家族平均 \(average)分")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-
-                ForEach(viewModel.state.rows) { row in
-                    RankingRowView(
-                        rank: row.rank,
-                        displayName: row.displayName,
-                        minutes: row.minutes
-                    )
+            .padding()
+            .onAppear {
+                viewModel.onAppear()
+            }
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    NavigationLink("メンバー管理") {
+                        MemberListView(viewModel: memberListViewModel)
+                    }
                 }
             }
-            Spacer()
-        }
-        .padding()
-        .onAppear {
-            viewModel.onAppear()
-        }
-        .sheet(isPresented: $isInviteCodePresented) {
-            InviteCodeView(viewModel: inviteCodeViewModel)
+            .sheet(isPresented: $isInviteCodePresented) {
+                InviteCodeView(viewModel: inviteCodeViewModel)
+            }
         }
     }
 }
@@ -62,5 +77,15 @@ struct HomeView: View {
     )
     let viewModel = HomeViewModel(getTodayRankingUseCase: useCases.getTodayRankingUseCase)
     let inviteViewModel = InviteCodeViewModel(familyRepository: repositories.familyRepository)
-    HomeView(viewModel: viewModel, inviteCodeViewModel: inviteViewModel)
+    let memberListViewModel = MemberListViewModel(
+        familyRepository: repositories.familyRepository,
+        addMemberUseCase: useCases.addMemberUseCase,
+        updateMemberUseCase: useCases.updateMemberUseCase,
+        deleteMemberUseCase: useCases.deleteMemberUseCase
+    )
+    HomeView(
+        viewModel: viewModel,
+        inviteCodeViewModel: inviteViewModel,
+        memberListViewModel: memberListViewModel
+    )
 }
