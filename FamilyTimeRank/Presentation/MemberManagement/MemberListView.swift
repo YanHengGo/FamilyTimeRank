@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MemberListView: View {
     @StateObject private var viewModel: MemberListViewModel
-    @State private var activeSheet: MemberSheetDestination?
+    @State private var editingMember: MemberRow?
     @State private var deletingMember: MemberRow?
 
     init(viewModel: MemberListViewModel) {
@@ -37,7 +37,7 @@ struct MemberListView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button("編集") {
                             if viewModel.canManageMembers {
-                                activeSheet = .edit(member)
+                                editingMember = member
                             } else {
                                 viewModel.notifyFamilyIdMissing()
                             }
@@ -56,50 +56,22 @@ struct MemberListView: View {
             }
         }
         .navigationTitle("メンバー管理")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button("追加") {
-                    if viewModel.canManageMembers {
-                        activeSheet = .create
-                    } else {
-                        viewModel.notifyFamilyIdMissing()
-                    }
-                }
-                .disabled(!viewModel.canManageMembers)
-            }
-        }
         .onAppear {
             viewModel.onAppear()
         }
-        .sheet(item: $activeSheet) { sheet in
-            switch sheet {
-            case .create:
-                MemberFormView(
-                    title: "メンバー追加",
-                    initialDisplayName: "",
-                    initialRole: .dad,
-                    initialDeviceModel: DeviceInfo.modelName()
-                ) { displayName, role, deviceModel in
-                    viewModel.addMember(
-                        displayName: displayName,
-                        role: role,
-                        deviceModel: deviceModel
-                    )
-                }
-            case .edit(let member):
-                MemberFormView(
-                    title: "メンバー編集",
-                    initialDisplayName: member.displayName,
-                    initialRole: member.role,
-                    initialDeviceModel: member.deviceModel ?? DeviceInfo.modelName()
-                ) { displayName, role, deviceModel in
-                    viewModel.updateMember(
-                        memberId: member.id,
-                        displayName: displayName,
-                        role: role,
-                        deviceModel: deviceModel
-                    )
-                }
+        .sheet(item: $editingMember) { member in
+            MemberFormView(
+                title: "メンバー編集",
+                initialDisplayName: member.displayName,
+                initialRole: member.role,
+                initialDeviceModel: member.deviceModel ?? DeviceInfo.modelName()
+            ) { displayName, role, deviceModel in
+                viewModel.updateMember(
+                    memberId: member.id,
+                    displayName: displayName,
+                    role: role,
+                    deviceModel: deviceModel
+                )
             }
         }
         .alert("メンバーを削除しますか？", isPresented: deleteAlertBinding()) {
@@ -124,20 +96,6 @@ struct MemberListView: View {
                 }
             }
         )
-    }
-}
-
-private enum MemberSheetDestination: Identifiable {
-    case create
-    case edit(MemberRow)
-
-    var id: String {
-        switch self {
-        case .create:
-            return "create"
-        case .edit(let member):
-            return "edit-\(member.id)"
-        }
     }
 }
 
