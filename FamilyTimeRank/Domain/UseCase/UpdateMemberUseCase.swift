@@ -5,7 +5,8 @@ protocol UpdateMemberUseCase {
         familyId: String,
         memberId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws
 }
 
@@ -20,13 +21,15 @@ final class UpdateMemberUseCaseImpl: UpdateMemberUseCase {
         familyId: String,
         memberId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws {
         try await familyRepository.updateMember(
             familyId: familyId,
             memberId: memberId,
             displayName: displayName,
-            role: role
+            role: role,
+            deviceModel: deviceModel
         )
     }
 }

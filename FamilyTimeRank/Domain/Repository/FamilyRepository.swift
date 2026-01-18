@@ -5,12 +5,18 @@ protocol FamilyRepository {
     func fetchMembers(familyId: String) async throws -> [Member]
     func createFamily(name: String, inviteCode: String) async throws -> String
     func findFamilyId(inviteCode: String) async throws -> String
-    func addMember(familyId: String, displayName: String, role: MemberRole) async throws -> String
+    func addMember(
+        familyId: String,
+        displayName: String,
+        role: MemberRole,
+        deviceModel: String
+    ) async throws -> String
     func updateMember(
         familyId: String,
         memberId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws
     func deleteMember(familyId: String, memberId: String) async throws
 }

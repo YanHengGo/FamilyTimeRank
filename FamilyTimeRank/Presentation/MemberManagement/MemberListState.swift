@@ -11,6 +11,7 @@ struct MemberRow: Identifiable, Equatable {
     let id: String
     let displayName: String
     let role: MemberRole
+    let deviceModel: String?
 }
 
 struct MemberListState: Equatable {

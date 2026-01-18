@@ -40,7 +40,7 @@ final class MemberListViewModel: ObservableObject {
         Task { await load() }
     }
 
-    func addMember(displayName: String, role: MemberRole) {
+    func addMember(displayName: String, role: MemberRole, deviceModel: String) {
         guard let familyId else {
             notifyFamilyIdMissing()
             return
@@ -50,7 +50,8 @@ final class MemberListViewModel: ObservableObject {
                 _ = try await addMemberUseCase.execute(
                     familyId: familyId,
                     displayName: displayName,
-                    role: role
+                    role: role,
+                    deviceModel: deviceModel
                 )
                 await load()
             } catch {
@@ -59,7 +60,12 @@ final class MemberListViewModel: ObservableObject {
         }
     }
 
-    func updateMember(memberId: String, displayName: String, role: MemberRole) {
+    func updateMember(
+        memberId: String,
+        displayName: String,
+        role: MemberRole,
+        deviceModel: String
+    ) {
         guard let familyId else {
             notifyFamilyIdMissing()
             return
@@ -70,7 +76,8 @@ final class MemberListViewModel: ObservableObject {
                     familyId: familyId,
                     memberId: memberId,
                     displayName: displayName,
-                    role: role
+                    role: role,
+                    deviceModel: deviceModel
                 )
                 await load()
             } catch {
@@ -108,7 +115,8 @@ final class MemberListViewModel: ObservableObject {
                     MemberRow(
                         id: $0.id,
                         displayName: $0.displayName,
-                        role: $0.role
+                        role: $0.role,
+                        deviceModel: $0.deviceModel
                     )
                 }
             )

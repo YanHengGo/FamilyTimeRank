@@ -5,7 +5,8 @@ protocol AddMemberUseCase {
     func execute(
         familyId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws -> String
 }
 
@@ -19,12 +20,14 @@ final class AddMemberUseCaseImpl: AddMemberUseCase {
     func execute(
         familyId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws -> String {
         try await familyRepository.addMember(
             familyId: familyId,
             displayName: displayName,
-            role: role
+            role: role,
+            deviceModel: deviceModel
         )
     }
 }

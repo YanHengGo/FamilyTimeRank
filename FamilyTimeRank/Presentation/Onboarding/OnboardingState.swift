@@ -21,6 +21,7 @@ struct OnboardingState: Equatable {
     var inviteCode: String
     var displayName: String
     var role: MemberRole
+    var deviceModel: String
     var status: OnboardingStatus
     var memberCandidates: [MemberRow]
     var pendingFamilyId: String?
