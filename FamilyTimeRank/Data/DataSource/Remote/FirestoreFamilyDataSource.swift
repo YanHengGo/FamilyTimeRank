@@ -10,6 +10,7 @@ struct MemberDTO {
     let id: String
     let displayName: String
     let role: String
+    let deviceModel: String
 }
 
 final class FirestoreFamilyDataSource {
@@ -98,7 +99,13 @@ final class FirestoreFamilyDataSource {
                             let displayName = data["displayName"] as? String,
                             let role = data["role"] as? String
                         else { return nil }
-                        return MemberDTO(id: doc.documentID, displayName: displayName, role: role)
+                        let deviceModel = data["deviceModel"] as? String ?? ""
+                        return MemberDTO(
+                            id: doc.documentID,
+                            displayName: displayName,
+                            role: role,
+                            deviceModel: deviceModel
+                        )
                     } ?? []
                     continuation.resume(returning: members)
                 }
@@ -108,7 +115,8 @@ final class FirestoreFamilyDataSource {
     func addMember(
         familyId: String,
         displayName: String,
-        role: String
+        role: String,
+        deviceModel: String
     ) async throws -> String {
         let docRef = db.collection("families")
             .document(familyId)
@@ -117,6 +125,7 @@ final class FirestoreFamilyDataSource {
         let data: [String: Any] = [
             "displayName": displayName,
             "role": role,
+            "deviceModel": deviceModel,
             "createdAt": FieldValue.serverTimestamp()
         ]
         return try await withCheckedThrowingContinuation { continuation in
@@ -134,7 +143,8 @@ final class FirestoreFamilyDataSource {
         familyId: String,
         memberId: String,
         displayName: String,
-        role: String
+        role: String,
+        deviceModel: String
     ) async throws {
         let docRef = db.collection("families")
             .document(familyId)
@@ -143,6 +153,7 @@ final class FirestoreFamilyDataSource {
         let data: [String: Any] = [
             "displayName": displayName,
             "role": role,
+            "deviceModel": deviceModel,
             "updatedAt": FieldValue.serverTimestamp()
         ]
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in

@@ -4,7 +4,8 @@ protocol CreateFamilyUseCase {
     func execute(
         familyName: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws -> String
 }
 
@@ -20,7 +21,8 @@ final class CreateFamilyUseCaseImpl: CreateFamilyUseCase {
     func execute(
         familyName: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws -> String {
         let inviteCode = Self.generateInviteCode()
         let familyId = try await familyRepository.createFamily(
@@ -30,7 +32,8 @@ final class CreateFamilyUseCaseImpl: CreateFamilyUseCase {
         _ = try await familyRepository.addMember(
             familyId: familyId,
             displayName: displayName,
-            role: role
+            role: role,
+            deviceModel: deviceModel
         )
         familyIdStore.save(familyId: familyId)
         return familyId

@@ -25,8 +25,14 @@ struct MemberListView: View {
                     HStack {
                         Text(member.displayName)
                         Spacer()
-                        Text(member.role.displayName)
-                            .foregroundStyle(.secondary)
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text(member.role.displayName)
+                            if let deviceModel = member.deviceModel, !deviceModel.isEmpty {
+                                Text(deviceModel)
+                                    .font(.caption)
+                            }
+                        }
+                        .foregroundStyle(.secondary)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button("編集") {
@@ -71,20 +77,27 @@ struct MemberListView: View {
                 MemberFormView(
                     title: "メンバー追加",
                     initialDisplayName: "",
-                    initialRole: .dad
-                ) { displayName, role in
-                    viewModel.addMember(displayName: displayName, role: role)
+                    initialRole: .dad,
+                    initialDeviceModel: DeviceInfo.modelName()
+                ) { displayName, role, deviceModel in
+                    viewModel.addMember(
+                        displayName: displayName,
+                        role: role,
+                        deviceModel: deviceModel
+                    )
                 }
             case .edit(let member):
                 MemberFormView(
                     title: "メンバー編集",
                     initialDisplayName: member.displayName,
-                    initialRole: member.role
-                ) { displayName, role in
+                    initialRole: member.role,
+                    initialDeviceModel: member.deviceModel ?? DeviceInfo.modelName()
+                ) { displayName, role, deviceModel in
                     viewModel.updateMember(
                         memberId: member.id,
                         displayName: displayName,
-                        role: role
+                        role: role,
+                        deviceModel: deviceModel
                     )
                 }
             }

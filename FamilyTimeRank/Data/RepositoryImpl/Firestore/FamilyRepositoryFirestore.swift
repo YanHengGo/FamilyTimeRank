@@ -44,12 +44,14 @@ final class FamilyRepositoryFirestore: FamilyRepository {
     func addMember(
         familyId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws -> String {
         try await dataSource.addMember(
             familyId: familyId,
             displayName: displayName,
-            role: role.rawValue
+            role: role.rawValue,
+            deviceModel: deviceModel
         )
     }
 
@@ -57,13 +59,15 @@ final class FamilyRepositoryFirestore: FamilyRepository {
         familyId: String,
         memberId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws {
         try await dataSource.updateMember(
             familyId: familyId,
             memberId: memberId,
             displayName: displayName,
-            role: role.rawValue
+            role: role.rawValue,
+            deviceModel: deviceModel
         )
     }
 
@@ -77,7 +81,12 @@ final class FamilyRepositoryFirestore: FamilyRepository {
     private func mapMembers(_ members: [MemberDTO]) -> [Member] {
         members.map { dto in
             let role = MemberRole(rawValue: dto.role) ?? .dad
-            return Member(id: dto.id, displayName: dto.displayName, role: role)
+            return Member(
+                id: dto.id,
+                displayName: dto.displayName,
+                role: role,
+                deviceModel: dto.deviceModel
+            )
         }
     }
 }

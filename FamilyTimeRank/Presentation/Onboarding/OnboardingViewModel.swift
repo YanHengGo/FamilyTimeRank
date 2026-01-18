@@ -27,6 +27,7 @@ final class OnboardingViewModel: ObservableObject {
             inviteCode: "",
             displayName: "",
             role: .dad,
+            deviceModel: DeviceInfo.modelName(),
             status: .idle,
             memberCandidates: [],
             pendingFamilyId: nil,
@@ -70,6 +71,10 @@ final class OnboardingViewModel: ObservableObject {
             state.status = .failed("表示名を入力してください。")
             return
         }
+        if state.deviceModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            state.status = .failed("端末名を入力してください。")
+            return
+        }
         state.status = .loading
         Task { await handleNewMemberSubmit() }
     }
@@ -79,6 +84,9 @@ final class OnboardingViewModel: ObservableObject {
         case .create:
             if state.displayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 return "表示名を入力してください。"
+            }
+            if state.deviceModel.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                return "端末名を入力してください。"
             }
             if state.familyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 return "家族名を入力してください。"
@@ -98,13 +106,19 @@ final class OnboardingViewModel: ObservableObject {
                 _ = try await createFamilyUseCase.execute(
                     familyName: state.familyName,
                     displayName: state.displayName,
-                    role: state.role
+                    role: state.role,
+                    deviceModel: state.deviceModel
                 )
             case .join:
                 let inviteCode = normalizedInviteCode()
                 let result = try await findFamilyMembersUseCase.execute(inviteCode: inviteCode)
                 state.memberCandidates = result.members.map {
-                    MemberRow(id: $0.id, displayName: $0.displayName, role: $0.role)
+                    MemberRow(
+                        id: $0.id,
+                        displayName: $0.displayName,
+                        role: $0.role,
+                        deviceModel: $0.deviceModel
+                    )
                 }
                 state.pendingFamilyId = result.familyId
                 state.status = .selectingMember
@@ -124,7 +138,8 @@ final class OnboardingViewModel: ObservableObject {
             _ = try await joinFamilyUseCase.execute(
                 inviteCode: inviteCode,
                 displayName: state.displayName,
-                role: state.role
+                role: state.role,
+                deviceModel: state.deviceModel
             )
             state.status = .idle
             didComplete = true

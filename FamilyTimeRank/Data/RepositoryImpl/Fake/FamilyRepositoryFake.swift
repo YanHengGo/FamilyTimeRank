@@ -9,10 +9,10 @@ final class FamilyRepositoryFake: FamilyRepository {
             name: "サンプル家族",
             inviteCode: "INVITE123",
             members: [
-                Member(id: "member-dad", displayName: "パパ", role: .dad),
-                Member(id: "member-mom", displayName: "ママ", role: .mom),
-                Member(id: "member-son", displayName: "息子", role: .son),
-                Member(id: "member-daughter", displayName: "娘", role: .daughter)
+                Member(id: "member-dad", displayName: "パパ", role: .dad, deviceModel: "iPhone 15"),
+                Member(id: "member-mom", displayName: "ママ", role: .mom, deviceModel: "iPhone 15"),
+                Member(id: "member-son", displayName: "息子", role: .son, deviceModel: "iPad Pro 12.9"),
+                Member(id: "member-daughter", displayName: "娘", role: .daughter, deviceModel: "iPad Pro 11")
             ]
         )
     }
@@ -44,13 +44,14 @@ final class FamilyRepositoryFake: FamilyRepository {
     func addMember(
         familyId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws -> String {
         guard family.id == familyId else {
             throw FamilyRepositoryError.familyNotFound
         }
         let newId = "member-\(UUID().uuidString)"
-        let member = Member(id: newId, displayName: displayName, role: role)
+        let member = Member(id: newId, displayName: displayName, role: role, deviceModel: deviceModel)
         family = Family(
             id: family.id,
             name: family.name,
@@ -64,7 +65,8 @@ final class FamilyRepositoryFake: FamilyRepository {
         familyId: String,
         memberId: String,
         displayName: String,
-        role: MemberRole
+        role: MemberRole,
+        deviceModel: String
     ) async throws {
         guard family.id == familyId else {
             throw FamilyRepositoryError.familyNotFound
@@ -74,7 +76,7 @@ final class FamilyRepositoryFake: FamilyRepository {
         }
         let updatedMembers = family.members.map { member in
             guard member.id == memberId else { return member }
-            return Member(id: memberId, displayName: displayName, role: role)
+            return Member(id: memberId, displayName: displayName, role: role, deviceModel: deviceModel)
         }
         family = Family(
             id: family.id,

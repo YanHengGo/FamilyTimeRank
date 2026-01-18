@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		745172732F13982900C27394 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 745172722F13982900C27394 /* FirebaseAuth */; };
 		745172752F13982900C27394 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 745172742F13982900C27394 /* FirebaseFirestore */; };
+		9F7B1C1A2F20000100ABCDEF /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9F7B1C1B2F20000100ABCDEF /* DeviceKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 			files = (
 				745172732F13982900C27394 /* FirebaseAuth in Frameworks */,
 				745172752F13982900C27394 /* FirebaseFirestore in Frameworks */,
+				9F7B1C1A2F20000100ABCDEF /* DeviceKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +76,7 @@
 			packageProductDependencies = (
 				745172722F13982900C27394 /* FirebaseAuth */,
 				745172742F13982900C27394 /* FirebaseFirestore */,
+				9F7B1C1B2F20000100ABCDEF /* DeviceKit */,
 			);
 			productName = FamilyTimeRank;
 			productReference = 74D00F7C2F09E33400C8C349 /* FamilyTimeRank.app */;
@@ -105,6 +108,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				745172712F13982900C27394 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				9F7B1C1C2F20000100ABCDEF /* XCRemoteSwiftPackageReference "DeviceKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 74D00F7D2F09E33400C8C349 /* Products */;
@@ -369,6 +373,14 @@
 				minimumVersion = 12.7.0;
 			};
 		};
+		9F7B1C1C2F20000100ABCDEF /* XCRemoteSwiftPackageReference "DeviceKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devicekit/DeviceKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -381,6 +393,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 745172712F13982900C27394 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		9F7B1C1B2F20000100ABCDEF /* DeviceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9F7B1C1C2F20000100ABCDEF /* XCRemoteSwiftPackageReference "DeviceKit" */;
+			productName = DeviceKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

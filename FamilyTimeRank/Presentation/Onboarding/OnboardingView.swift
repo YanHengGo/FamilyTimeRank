@@ -29,6 +29,8 @@ struct OnboardingView: View {
                     Section(header: Text("メンバー情報")) {
                         TextField("表示名", text: $viewModel.state.displayName)
                             .textInputAutocapitalization(.never)
+                        TextField("端末名", text: $viewModel.state.deviceModel)
+                            .textInputAutocapitalization(.never)
                         Picker("役割", selection: $viewModel.state.role) {
                             ForEach(MemberRole.allCases, id: \.self) { role in
                                 Text(role.displayName).tag(role)
@@ -86,6 +88,8 @@ struct OnboardingView: View {
                     } else if viewModel.state.isAddingNewMember {
                         Section(header: Text("メンバー情報")) {
                             TextField("表示名", text: $viewModel.state.displayName)
+                                .textInputAutocapitalization(.never)
+                            TextField("端末名", text: $viewModel.state.deviceModel)
                                 .textInputAutocapitalization(.never)
                             Picker("役割", selection: $viewModel.state.role) {
                                 ForEach(MemberRole.allCases, id: \.self) { role in
