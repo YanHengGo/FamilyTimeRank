@@ -18,10 +18,7 @@ final class FamilyRepositoryFirestore: FamilyRepository {
 
         let (family, members) = try await (familyDTO, memberDTOs)
 
-        let domainMembers = members.map { dto in
-            let role = MemberRole(rawValue: dto.role) ?? .dad
-            return Member(id: dto.id, displayName: dto.displayName, role: role)
-        }
+        let domainMembers = mapMembers(members)
 
         return Family(
             id: familyId,
@@ -29,6 +26,11 @@ final class FamilyRepositoryFirestore: FamilyRepository {
             inviteCode: family.inviteCode ?? "",
             members: domainMembers
         )
+    }
+
+    func fetchMembers(familyId: String) async throws -> [Member] {
+        let members = try await dataSource.fetchMembers(familyId: familyId)
+        return mapMembers(members)
     }
 
     func createFamily(name: String, inviteCode: String) async throws -> String {
@@ -70,5 +72,12 @@ final class FamilyRepositoryFirestore: FamilyRepository {
         memberId: String
     ) async throws {
         try await dataSource.deleteMember(familyId: familyId, memberId: memberId)
+    }
+
+    private func mapMembers(_ members: [MemberDTO]) -> [Member] {
+        members.map { dto in
+            let role = MemberRole(rawValue: dto.role) ?? .dad
+            return Member(id: dto.id, displayName: dto.displayName, role: role)
+        }
     }
 }

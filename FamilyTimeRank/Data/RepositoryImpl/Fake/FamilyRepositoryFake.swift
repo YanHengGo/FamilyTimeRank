@@ -21,6 +21,13 @@ final class FamilyRepositoryFake: FamilyRepository {
         return family
     }
 
+    func fetchMembers(familyId: String) async throws -> [Member] {
+        guard family.id == familyId else {
+            throw FamilyRepositoryError.familyNotFound
+        }
+        return family.members
+    }
+
     func createFamily(name: String, inviteCode: String) async throws -> String {
         let newId = "family-\(UUID().uuidString)"
         family = Family(id: newId, name: name, inviteCode: inviteCode, members: [])
