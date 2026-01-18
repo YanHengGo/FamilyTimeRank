@@ -11,6 +11,7 @@ enum OnboardingMode: String, CaseIterable, Identifiable {
 enum OnboardingStatus: Equatable {
     case idle
     case loading
+    case selectingMember
     case failed(String)
 }
 
@@ -21,4 +22,7 @@ struct OnboardingState: Equatable {
     var displayName: String
     var role: MemberRole
     var status: OnboardingStatus
+    var memberCandidates: [MemberRow]
+    var pendingFamilyId: String?
+    var isAddingNewMember: Bool
 }

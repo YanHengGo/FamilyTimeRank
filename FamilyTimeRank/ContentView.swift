@@ -26,7 +26,9 @@ struct ContentView: View {
         )
         let viewModel = OnboardingViewModel(
             createFamilyUseCase: useCases.createFamilyUseCase,
-            joinFamilyUseCase: useCases.joinFamilyUseCase
+            joinFamilyUseCase: useCases.joinFamilyUseCase,
+            findFamilyMembersUseCase: useCases.findFamilyMembersUseCase,
+            familyIdStore: UserDefaultsFamilyIdStore()
         )
         return OnboardingView(viewModel: viewModel) {
             familyId = UserDefaultsFamilyIdStore().get() ?? ""
